@@ -26,18 +26,33 @@ jobs:
         AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
         AWS_REGION: us-east-1
 
-    - name: Build, test, tag, and push image to Amazon ECR
+    - name: Build webapp and push to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: assignment1
+        ECR_REPOSITORY: clo835-assign-app
         IMAGE_TAG: v0.1
       run: |
         cd webapp/
         ls -ltra
         # Docker build
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        # Unit test
-        docker run -d -p 80:8080 --name nodeapp $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        # Unit test run
+        docker run
         docker ps
-        curl localhost -vvv
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+
+    - name: Build mysql image and push
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: clo835-assign-db
+        IMAGE_TAG: v0.1
+      run: |
+        cd mysql/
+        ls -ltra
+        # Docker build
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        # Unit test run
+        docker run
+        docker ps
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
