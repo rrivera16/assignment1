@@ -43,4 +43,3 @@ jobs:
         sleep 10
         curl localhost -vvv
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
