@@ -45,14 +45,20 @@ module "globalvars" {
   source = "../../modules/globalvars"
 }
 
+#Get an existing IAM instance profile
+data "aws_iam_instance_profile" "lab_profile" {
+  name = "LabInstanceProfile"
+}
+
 # Reference subnet provisioned by 01-Networking 
 resource "aws_instance" "my_amazon" {
   ami                         = data.aws_ami.latest_amazon_linux.id
   instance_type               = lookup(var.instance_type, var.env)
   key_name                    = aws_key_pair.my_key.key_name
   vpc_security_group_ids             = [aws_security_group.my_sg.id]
+  iam_instance_profile = data.aws_iam_instance_profile.lab_profile.name
   associate_public_ip_address = false
-  iam_instance_profile   = data.aws_iam_instance_profile.lab_profile.name
+  
 
   lifecycle {
     create_before_destroy = true
@@ -63,12 +69,6 @@ resource "aws_instance" "my_amazon" {
       "Name" = "${local.name_prefix}-Amazon-Linux"
     }
   )
-}
-
-# Get an existing IAM instance profile
-data "aws_iam_instance_profile" "lab_profile" 
-{  name = "LabInstanceProfile"
-  
 }
 
 # Adding SSH key to Amazon EC2
