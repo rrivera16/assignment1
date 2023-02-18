@@ -52,6 +52,7 @@ resource "aws_instance" "my_amazon" {
   key_name                    = aws_key_pair.my_key.key_name
   vpc_security_group_ids             = [aws_security_group.my_sg.id]
   associate_public_ip_address = false
+  iam_instance_profile   = data.aws_iam_instance_profile.lab_profile.name
 
   lifecycle {
     create_before_destroy = true
@@ -64,6 +65,11 @@ resource "aws_instance" "my_amazon" {
   )
 }
 
+# Get an existing IAM instance profile
+data "aws_iam_instance_profile" "lab_profile" 
+{  name = "LabInstanceProfile"
+  
+}
 
 # Adding SSH key to Amazon EC2
 resource "aws_key_pair" "my_key" {
@@ -73,7 +79,7 @@ resource "aws_key_pair" "my_key" {
 
 # Security Group
 resource "aws_security_group" "my_sg" {
-  name        = "allow_ssh5"
+  name        = "allow_ssh7"
   description = "Allow SSH inbound traffic"
   vpc_id      = data.aws_vpc.default.id
 
